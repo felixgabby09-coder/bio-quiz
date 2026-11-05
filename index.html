@@ -1,655 +1,488 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Biopsychology Ch.7 Interactive Quiz Arena</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Inter', sans-serif; }
-        .font-cyber { font-family: 'Orbitron', sans-serif; }
-        .glow-blue { text-shadow: 0 0 15px rgba(56, 189, 248, 0.5); }
-        .glow-amber { text-shadow: 0 0 15px rgba(245, 158, 11, 0.5); }
-        .glow-rose { text-shadow: 0 0 15px rgba(244, 63, 94, 0.5); }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Biopsychology & Neurobiology Learning Platform</title>
+  <style>
+    :root {
+      --bg-dark: #0f172a;
+      --card-bg: #1e293b;
+      --accent-blue: #38bdf8;
+      --accent-green: #22c55e;
+      --accent-red: #ef4444;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-color: #334155;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 24px;
+      max-width: 800px;
+    }
+
+    header h1 {
+      color: var(--accent-blue);
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+
+    header p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    nav {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+      background: var(--card-bg);
+      padding: 6px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+    }
+
+    nav button {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 10px 20px;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+    }
+
+    nav button.active {
+      background: var(--accent-blue);
+      color: var(--bg-dark);
+    }
+
+    .container {
+      width: 100%;
+      max-width: 800px;
+      background: var(--card-bg);
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      padding: 24px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+    }
+
+    .view-section {
+      display: none;
+    }
+
+    .view-section.active {
+      display: block;
+    }
+
+    /* Slideshow Controls */
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .slide-timer {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .slide-timer select {
+      background: var(--bg-dark);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      padding: 4px 8px;
+      border-radius: 4px;
+    }
+
+    .progress-bar-container {
+      width: 100%;
+      height: 6px;
+      background: var(--bg-dark);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: var(--accent-blue);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .slide-content h2 {
+      color: var(--accent-blue);
+      margin-bottom: 12px;
+    }
+
+    .slide-content p {
+      line-height: 1.6;
+      color: var(--text-main);
+      margin-bottom: 16px;
+    }
+
+    .slide-nav {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 24px;
+    }
+
+    .btn {
+      background: var(--accent-blue);
+      color: var(--bg-dark);
+      border: none;
+      padding: 10px 18px;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Quiz Tiers */
+    .tier-selector {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .tier-btn {
+      flex: 1;
+      padding: 8px;
+      background: var(--bg-dark);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: center;
+      font-size: 0.85rem;
+    }
+
+    .tier-btn.active {
+      border-color: var(--accent-blue);
+      color: var(--accent-blue);
+      font-weight: bold;
+    }
+
+    .tier-btn.locked {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .options-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .option-btn {
+      background: var(--bg-dark);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 12px 16px;
+      border-radius: 6px;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .option-btn:hover:not(:disabled) {
+      border-color: var(--accent-blue);
+    }
+
+    .option-btn.correct {
+      background: rgba(34, 197, 94, 0.2);
+      border-color: var(--accent-green);
+      color: var(--accent-green);
+    }
+
+    .option-btn.incorrect {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: var(--accent-red);
+      color: var(--accent-red);
+    }
+
+    .explanation {
+      margin-top: 16px;
+      padding: 12px;
+      background: rgba(56, 189, 248, 0.1);
+      border-left: 4px solid var(--accent-blue);
+      border-radius: 4px;
+      font-size: 0.9rem;
+      display: none;
+    }
+  </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between selection:bg-cyan-500 selection:text-white">
+<body>
 
-    <!-- Header -->
-    <header class="border-b border-slate-800 bg-slate-900/90 backdrop-blur sticky top-0 z-50 px-6 py-4 flex items-center justify-between">
-        <div class="flex items-center space-x-3">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-cyan-400 flex items-center justify-center shadow-lg shadow-cyan-500/20">
-                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
-            </div>
-            <div>
-                <h1 class="font-cyber text-lg tracking-wider font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">BIOPSYCH ARENA</h1>
-                <p class="text-xs text-slate-400">Chapter 7 Mastery Quiz</p>
-            </div>
+  <header>
+    <h1>Biopsychology & Neurobiology Module</h1>
+    <p>Interactive Study Ledger & Adaptive Review Engine</p>
+  </header>
+
+  <nav>
+    <button id="tab-slides" class="active" onclick="switchTab('slides')">Slideshow Mode</button>
+    <button id="tab-quiz" onclick="switchTab('quiz')">Adaptive Quiz</button>
+  </nav>
+
+  <div class="container">
+    <!-- SLIDESHOW VIEW -->
+    <div id="slides-view" class="view-section active">
+      <div class="controls">
+        <span id="slide-number">Slide 1 of 3</span>
+        <div class="slide-timer">
+          <label for="timer-select">Auto-Play:</label>
+          <select id="timer-select" onchange="changeTimerSpeed(this.value)">
+            <option value="0">Off</option>
+            <option value="3000">3 sec</option>
+            <option value="5000">5 sec</option>
+            <option value="10000">10 sec</option>
+          </select>
         </div>
-        <div id="score-display" class="hidden items-center space-x-4 font-cyber text-sm">
-            <div class="bg-slate-800/80 px-3.5 py-1.5 rounded-lg border border-slate-700">
-                SCORE: <span id="current-score" class="text-cyan-400 font-bold">0</span>/<span id="total-questions">10</span>
-            </div>
-            <div class="bg-slate-800/80 px-3.5 py-1.5 rounded-lg border border-slate-700">
-                LEVEL: <span id="current-level-badge" class="font-bold">EASY</span>
-            </div>
+      </div>
+      <div class="progress-bar-container">
+        <div id="progress-bar" class="progress-bar"></div>
+      </div>
+      <div class="slide-content">
+        <h2 id="slide-title">Module 1: Synaptic Pharmacology & Reuptake</h2>
+        <p id="slide-body">
+          Neurotransmitters are released into the synaptic cleft where they bind to postsynaptic receptors.
+          To terminate signalling, reuptake transporters clear neurotransmitters from the synapse back into the presynaptic neuron. 
+          Selective Serotonin Reuptake Inhibitors (SSRIs) block these transporters, increasing extracellular serotonin availability.
+        </p>
+      </div>
+      <div class="slide-nav">
+        <button class="btn" id="prev-btn" onclick="prevSlide()">Previous</button>
+        <button class="btn" id="next-btn" onclick="nextSlide()">Next</button>
+      </div>
+    </div>
+
+    <!-- QUIZ VIEW -->
+    <div id="quiz-view" class="view-section">
+      <div class="tier-selector">
+        <div class="tier-btn active" id="tier-1-btn" onclick="selectTier(1)">Tier 1: Foundations</div>
+        <div class="tier-btn" id="tier-2-btn" onclick="selectTier(2)">Tier 2: Application</div>
+        <div class="tier-btn" id="tier-3-btn" onclick="selectTier(3)">Tier 3: Advanced</div>
+      </div>
+
+      <div class="quiz-content">
+        <h3 id="quiz-question">Question loading...</h3>
+        <div class="options-grid" id="options-container"></div>
+        <div id="explanation" class="explanation"></div>
+        <div style="margin-top: 20px; text-align: right;">
+          <button class="btn" id="next-quiz-btn" style="display:none;" onclick="nextQuestion()">Next Question</button>
         </div>
-    </header>
+      </div>
+    </div>
+  </div>
 
-    <!-- Main Content -->
-    <main class="max-w-4xl mx-auto px-4 py-8 flex-grow w-full flex flex-col justify-center">
+  <script>
+    // --- SLIDESHOW LOGIC ---
+    const slidesData = [
+      {
+        title: "Module 1: Synaptic Pharmacology & Reuptake Systems",
+        body: "Neurotransmitters are released into the synaptic cleft to interact with receptors. Reuptake mechanisms pump surplus neurotransmitters back into the presynaptic terminal. Pharmacological agents, like SSRIs or cocaine, block specific reuptake transporters to prolong synaptic signaling."
+      },
+      {
+        title: "Module 2: EPSPs, IPSPs & Synaptic Summation",
+        body: "Excitatory Postsynaptic Potentials (EPSPs) depolarize the membrane (moving closer to threshold), while Inhibitory Postsynaptic Potentials (IPSPs) hyperpolarize it. A neuron integrates these signals via spatial (multiple locations) and temporal (rapid succession) summation at the axon hillock."
+      },
+      {
+        title: "Module 3: Neuroanatomy & Long-Term Potentiation (LTP)",
+        body: "LTP serves as the biological foundation of memory and learning. Repeated high-frequency stimulation strengthens synaptic connections through NMDA and AMPA receptor dynamics, increasing dendritic spine density and neurotransmitter sensitivity."
+      }
+    ];
 
-        <!-- Menu Screen -->
-        <div id="screen-menu" class="space-y-6">
-            <div class="text-center space-y-3 max-w-2xl mx-auto">
-                <h2 class="font-cyber text-3xl md:text-4xl font-extrabold glow-blue">SELECT DIFFICULTY LEVEL</h2>
-                <p class="text-slate-400 text-sm md:text-base">Test your knowledge across 3 tier-scaled sets (10 questions each) covering hearing, touch, pain, chemical senses, and attention.</p>
-            </div>
+    let currentSlide = 0;
+    let timerId = null;
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-                <!-- Tier 1 -->
-                <div onclick="startSet(0)" class="group relative bg-slate-900 border border-slate-800 hover:border-cyan-500/50 rounded-2xl p-6 cursor-pointer transition-all duration-300 hover:shadow-xl hover:shadow-cyan-500/10 flex flex-col justify-between">
-                    <div>
-                        <div class="flex items-center justify-between mb-4">
-                            <span class="w-10 h-10 rounded-xl bg-cyan-600/20 text-cyan-400 flex items-center justify-center font-cyber font-bold text-sm">01</span>
-                            <span class="text-xs font-cyber font-bold px-2.5 py-1 rounded-full bg-cyan-950 text-cyan-400 border border-cyan-800">EASY</span>
-                        </div>
-                        <h3 class="font-cyber font-bold text-lg text-white mb-2">Fundamental Concepts</h3>
-                        <p class="text-slate-400 text-xs leading-relaxed">Basic definitions, core anatomy, primary receptor roles, and foundational principles of perception.</p>
-                    </div>
-                    <div class="mt-6 flex items-center text-xs font-cyber text-cyan-400 group-hover:translate-x-1 transition-transform">
-                        <span>START TIER 1 (10 Qs)</span> &rarr;
-                    </div>
-                </div>
+    function renderSlide() {
+      document.getElementById('slide-title').innerText = slidesData[currentSlide].title;
+      document.getElementById('slide-body').innerText = slidesData[currentSlide].body;
+      document.getElementById('slide-number').innerText = `Slide ${currentSlide + 1} of ${slidesData.length}`;
+      document.getElementById('progress-bar').style.width = `${((currentSlide + 1) / slidesData.length) * 100}%`;
+      document.getElementById('prev-btn').disabled = currentSlide === 0;
+      document.getElementById('next-btn').disabled = currentSlide === slidesData.length - 1;
+    }
 
-                <!-- Tier 2 -->
-                <div onclick="startSet(1)" class="group relative bg-slate-900 border border-slate-800 hover:border-amber-500/50 rounded-2xl p-6 cursor-pointer transition-all duration-300 hover:shadow-xl hover:shadow-amber-500/10 flex flex-col justify-between">
-                    <div>
-                        <div class="flex items-center justify-between mb-4">
-                            <span class="w-10 h-10 rounded-xl bg-amber-600/20 text-amber-400 flex items-center justify-center font-cyber font-bold text-sm">02</span>
-                            <span class="text-xs font-cyber font-bold px-2.5 py-1 rounded-full bg-amber-950 text-amber-400 border border-amber-800">MODERATE</span>
-                        </div>
-                        <h3 class="font-cyber font-bold text-lg text-white mb-2">Neural Pathways &amp; Systems</h3>
-                        <p class="text-slate-400 text-xs leading-relaxed">Ascending pathways, cortical organization, subcortical localization, and receptor tuning mechanisms.</p>
-                    </div>
-                    <div class="mt-6 flex items-center text-xs font-cyber text-amber-400 group-hover:translate-x-1 transition-transform">
-                        <span>START TIER 2 (10 Qs)</span> &rarr;
-                    </div>
-                </div>
+    function nextSlide() {
+      if (currentSlide < slidesData.length - 1) {
+        currentSlide++;
+        renderSlide();
+      }
+    }
 
-                <!-- Tier 3 -->
-                <div onclick="startSet(2)" class="group relative bg-slate-900 border border-slate-800 hover:border-rose-500/50 rounded-2xl p-6 cursor-pointer transition-all duration-300 hover:shadow-xl hover:shadow-rose-500/10 flex flex-col justify-between">
-                    <div>
-                        <div class="flex items-center justify-between mb-4">
-                            <span class="w-10 h-10 rounded-xl bg-rose-600/20 text-rose-400 flex items-center justify-center font-cyber font-bold text-sm">03</span>
-                            <span class="text-xs font-cyber font-bold px-2.5 py-1 rounded-full bg-rose-950 text-rose-400 border border-rose-800">DIFFICULT</span>
-                        </div>
-                        <h3 class="font-cyber font-bold text-lg text-white mb-2">Complex Circuits &amp; Pathology</h3>
-                        <p class="text-slate-400 text-xs leading-relaxed">Descending control pathways, clinical agnosias, neuroplasticity, attentional disorders, and subtle paradoxes.</p>
-                    </div>
-                    <div class="mt-6 flex items-center text-xs font-cyber text-rose-400 group-hover:translate-x-1 transition-transform">
-                        <span>START TIER 3 (10 Qs)</span> &rarr;
-                    </div>
-                </div>
-            </div>
-        </div>
+    function prevSlide() {
+      if (currentSlide > 0) {
+        currentSlide--;
+        renderSlide();
+      }
+    }
 
-        <!-- Quiz Screen -->
-        <div id="screen-quiz" class="hidden space-y-6">
-            <!-- Progress Bar -->
-            <div class="w-full bg-slate-900 h-2 rounded-full overflow-hidden border border-slate-800">
-                <div id="progress-bar" class="bg-gradient-to-r from-blue-500 to-cyan-400 h-full w-0 transition-all duration-300"></div>
-            </div>
+    function changeTimerSpeed(ms) {
+      if (timerId) clearInterval(timerId);
+      const speed = parseInt(ms);
+      if (speed > 0) {
+        timerId = setInterval(() => {
+          if (currentSlide < slidesData.length - 1) {
+            nextSlide();
+          } else {
+            currentSlide = 0;
+            renderSlide();
+          }
+        }, speed);
+      }
+    }
 
-            <!-- Question Box -->
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 shadow-2xl relative">
-                <div class="flex items-center justify-between mb-4">
-                    <span id="q-category" class="text-xs font-cyber font-semibold text-cyan-400 bg-cyan-950/80 px-3 py-1 rounded-full border border-cyan-800">CATEGORY</span>
-                    <span class="text-xs font-cyber text-slate-400">Q <span id="q-current">1</span>/10</span>
-                </div>
-
-                <h3 id="question-text" class="text-lg md:text-xl font-semibold text-slate-100 mb-6 leading-relaxed">
-                    Loading question...
-                </h3>
-
-                <!-- Options -->
-                <div id="options-container" class="space-y-3">
-                    <!-- Dynamic Options -->
-                </div>
-
-                <!-- Hint -->
-                <div class="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between">
-                    <button onclick="toggleHint()" class="text-xs font-cyber text-slate-400 hover:text-cyan-400 transition-colors flex items-center space-x-1">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        <span>Need a hint?</span>
-                    </button>
-                    <span id="hint-text" class="hidden text-xs text-amber-300 bg-amber-950/40 px-3 py-1 rounded border border-amber-800/50"></span>
-                </div>
-            </div>
-
-            <!-- Rationale Feedback -->
-            <div id="feedback-box" class="hidden bg-slate-900 border border-slate-800 rounded-xl p-5">
-                <div class="flex items-center space-x-2 mb-2">
-                    <span id="feedback-icon" class="text-lg"></span>
-                    <h4 id="feedback-title" class="font-cyber font-bold text-sm"></h4>
-                </div>
-                <p id="feedback-text" class="text-xs md:text-sm text-slate-300 leading-relaxed mb-4"></p>
-                <button onclick="nextQuestion()" class="w-full py-3 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white font-cyber font-bold text-xs tracking-wider rounded-xl shadow-lg transition-all">
-                    CONTINUE &rarr;
-                </button>
-            </div>
-        </div>
-
-        <!-- Result Screen -->
-        <div id="screen-complete" class="hidden text-center space-y-6 max-w-lg mx-auto bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl">
-            <div id="result-icon-bg" class="w-20 h-20 mx-auto rounded-2xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-cyber text-3xl font-bold border border-cyan-500/30">
-                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-            </div>
-            <div>
-                <h2 class="font-cyber text-2xl font-bold text-white mb-2">SET COMPLETED!</h2>
-                <p id="result-subtitle" class="text-slate-400 text-sm">You completed Tier 1.</p>
-            </div>
-            <div class="bg-slate-950/80 p-6 rounded-2xl border border-slate-800 space-y-1">
-                <p class="text-xs text-slate-400 font-cyber">FINAL SCORE</p>
-                <p id="final-score" class="text-4xl font-cyber font-extrabold text-cyan-400">0 / 10</p>
-            </div>
-            <div class="flex space-x-4">
-                <button onclick="resetToMenu()" class="flex-1 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-cyber font-bold text-xs rounded-xl transition-all border border-slate-700">
-                    MENU
-                </button>
-                <button onclick="restartSet()" class="flex-1 py-3 bg-cyan-600 hover:bg-cyan-500 text-white font-cyber font-bold text-xs rounded-xl shadow-lg transition-all">
-                    RETRY TIER
-                </button>
-            </div>
-        </div>
-
-    </main>
-
-    <footer class="border-t border-slate-800 bg-slate-900/50 px-6 py-4 text-center text-xs text-slate-500 font-cyber">
-        Biopsychology Chapter 7 • Tiered Difficulty Study System
-    </footer>
-
-    <script>
-        const quizData = [
-            // SET 1: EASY (Foundational Concepts)
-            [
-                {
-                    cat: "AUDITORY",
-                    q: "What physical wave dimension corresponds directly to the perception of sound pitch?",
-                    options: [
-                        { text: "Frequency", isCorrect: true, rationale: "Frequency (cycles per second) determines perceived pitch." },
-                        { text: "Amplitude", isCorrect: false, rationale: "Amplitude determines perceived loudness." },
-                        { text: "Complexity", isCorrect: false, rationale: "Complexity determines sound timbre." },
-                        { text: "Velocity", isCorrect: false, rationale: "Wave velocity is constant in a given medium." }
-                    ],
-                    hint: "Think about rate of wave repetition."
-                },
-                {
-                    cat: "AUDITORY",
-                    q: "What is the primary function of the ear's tympanic membrane?",
-                    options: [
-                        { text: "Vibrating in response to sound waves arriving down the canal", isCorrect: true, rationale: "The tympanic membrane (eardrum) converts air pressure waves into mechanical vibrations." },
-                        { text: "Dissipating fluid vibrations in the cochlea", isCorrect: false, rationale: "That is the role of the round window." },
-                        { text: "Transducing fluid movements into nerve impulses", isCorrect: false, rationale: "That is performed by hair cells in the organ of Corti." },
-                        { text: "Filtering out high-frequency auditory noise", isCorrect: false, rationale: "The tympanic membrane does not filter specific frequencies." }
-                    ],
-                    hint: "Commonly known as the eardrum."
-                },
-                {
-                    cat: "SOMATOSENSORY",
-                    q: "Which cutaneous receptors are free nerve endings primarily sensitive to?",
-                    options: [
-                        { text: "Temperature changes and pain", isCorrect: true, rationale: "Free nerve endings lack specialized encapsulated structures and respond to pain and temperature." },
-                        { text: "High-frequency skin vibrations", isCorrect: false, rationale: "Vibrations are detected by Pacinian corpuscles." },
-                        { text: "Gradual skin stretch", isCorrect: false, rationale: "Skin stretch is detected by Ruffini endings." },
-                        { text: "Light hair displacement only", isCorrect: false, rationale: "Free nerve endings cover broader nociceptive/thermal functions." }
-                    ],
-                    hint: "The simplest receptors with no surrounding capsule."
-                },
-                {
-                    cat: "SOMATOSENSORY",
-                    q: "What is a dermatome?",
-                    options: [
-                        { text: "An area of skin innervated by the dorsal roots of a single spinal cord segment", isCorrect: true, rationale: "Each dermatome corresponds to a specific spinal cord dorsal root level." },
-                        { text: "A cortical map in the occipital visual field", isCorrect: false, rationale: "Dermatomes refer to body surface innervation." },
-                        { text: "A specialized hair cell bundle inside the inner ear", isCorrect: false, rationale: "Hair cell bundles are in the organ of Corti." },
-                        { text: "A brainstem nucleus receiving gustatory input", isCorrect: false, rationale: "That is the solitary nucleus." }
-                    ],
-                    hint: "Derma means skin; tome means segment."
-                },
-                {
-                    cat: "CHEMICAL SENSES",
-                    q: "Where are human olfactory receptor cells located?",
-                    options: [
-                        { text: "Olfactory mucosa in the upper nasal passages", isCorrect: true, rationale: "Olfactory receptors are embedded in the nasal olfactory mucosa." },
-                        { text: "Tongue papillae clusters", isCorrect: false, rationale: "Papillae contain taste buds." },
-                        { text: "Medial dorsal nucleus of the thalamus", isCorrect: false, rationale: "The thalamus is a central brain nucleus." },
-                        { text: "Cribriform plate bone marrow", isCorrect: false, rationale: "Axons pass through holes in the cribriform bone." }
-                    ],
-                    hint: "The mucus layer high inside the nose."
-                },
-                {
-                    cat: "CHEMICAL SENSES",
-                    q: "What are taste buds grouped inside on the surface of the tongue?",
-                    options: [
-                        { text: "Papillae", isCorrect: true, rationale: "Taste buds reside inside small protuberances called papillae." },
-                        { text: "Glomeruli", isCorrect: false, rationale: "Glomeruli are olfactory bulb structures." },
-                        { text: "Ossicles", isCorrect: false, rationale: "Ossicles are middle ear bones." },
-                        { text: "Dermatomes", isCorrect: false, rationale: "Dermatomes are skin innervation regions." }
-                    ],
-                    hint: "The small visible bumps on your tongue."
-                },
-                {
-                    cat: "ATTENTION",
-                    q: "What is selective attention?",
-                    options: [
-                        { text: "Focusing perception on a subset of stimuli while ignoring others", isCorrect: true, rationale: "Selective attention enhances focus on specific inputs while suppressing rest." },
-                        { text: "Inability to perceive more than one object at a time", isCorrect: false, rationale: "That is simultanagnosia." },
-                        { text: "Automatic processing of all sensory inputs equally", isCorrect: false, rationale: "Human perception has limited capacity and cannot process everything equally." },
-                        { text: "Loss of touch perception following spinal trauma", isCorrect: false, rationale: "That is sensory anesthesia." }
-                    ],
-                    hint: "Selecting what to focus on."
-                },
-                {
-                    cat: "ORGANIZATION",
-                    q: "In sensory hierarchies, which level receives input directly from thalamic relay nuclei?",
-                    options: [
-                        { text: "Primary sensory cortex", isCorrect: true, rationale: "Primary sensory cortex receives input directly from sensory thalamic nuclei." },
-                        { text: "Association cortex", isCorrect: false, rationale: "Association cortex receives input from secondary areas." },
-                        { text: "Secondary sensory cortex", isCorrect: false, rationale: "Secondary cortex receives input from primary cortex." },
-                        { text: "Motor cortex", isCorrect: false, rationale: "Motor cortex outputs motor commands." }
-                    ],
-                    hint: "The first level of cortex in a sensory system."
-                },
-                {
-                    cat: "AUDITORY",
-                    q: "Which three small bones form the middle ear ossicle chain?",
-                    options: [
-                        { text: "Malleus, incus, and stapes", isCorrect: true, rationale: "Hammer, anvil, and stirrup (malleus, incus, stapes)." },
-                        { text: "Cochlea, vestibule, and semicircular canals", isCorrect: false, rationale: "These are inner ear structures." },
-                        { text: "Basilar, tectorial, and reissner membranes", isCorrect: false, rationale: "These are cochlear membranes." },
-                        { text: "Pinna, helix, and lobule", isCorrect: false, rationale: "These are outer ear cartilage parts." }
-                    ],
-                    hint: "Hammer, anvil, and stirrup."
-                },
-                {
-                    cat: "CHEMICAL SENSES",
-                    q: "What condition refers to the total loss of the sense of smell?",
-                    options: [
-                        { text: "Anosmia", isCorrect: true, rationale: "Anosmia is the inability to smell." },
-                        { text: "Ageusia", isCorrect: false, rationale: "Ageusia is the loss of taste." },
-                        { text: "Astereognosia", isCorrect: false, rationale: "Astereognosia is tactile object recognition loss." },
-                        { text: "Tinnitus", isCorrect: false, rationale: "Tinnitus is ringing in the ears." }
-                    ],
-                    hint: "A- (without) + osmia (smell)."
-                }
-            ],
-
-            // SET 2: MODERATE (Neural Pathways & Systems)
-            [
-                {
-                    cat: "AUDITORY",
-                    q: "What mathematical procedure breaks down complex sound waves into component sine waves?",
-                    options: [
-                        { text: "Fourier analysis", isCorrect: true, rationale: "Fourier analysis decomposes complex waveforms into sine waves." },
-                        { text: "Tonotopic mapping", isCorrect: false, rationale: "Tonotopic mapping is frequency-based spatial cortex layout." },
-                        { text: "Cochlear shear transduction", isCorrect: false, rationale: "Transduction is mechanical-to-electrical signal conversion." },
-                        { text: "Lateral inhibition", isCorrect: false, rationale: "Lateral inhibition sharpens spatial contrast." }
-                    ],
-                    hint: "Named after French mathematician Joseph Fourier."
-                },
-                {
-                    cat: "AUDITORY",
-                    q: "How do lateral superior olives contribute to sound localization?",
-                    options: [
-                        { text: "By measuring differences in sound amplitude between ears", isCorrect: true, rationale: "Lateral superior olives process amplitude/intensity differences." },
-                        { text: "By measuring differences in sound arrival time between ears", isCorrect: false, rationale: "Medial superior olives measure arrival time differences." },
-                        { text: "By mapping visual coordinates onto the auditory cortex", isCorrect: false, rationale: "Superior colliculi map multimodal space." },
-                        { text: "By filtering low-frequency fundamental tones", isCorrect: false, rationale: "Olives do not act as fundamental filters." }
-                    ],
-                    hint: "Contrast with the MEDIAL olives which process TIME."
-                },
-                {
-                    cat: "SOMATOSENSORY",
-                    q: "Where do sensory neurons in the Dorsal-Column Medial-Lemniscus (DCML) system first synapse?",
-                    options: [
-                        { text: "Dorsal column nuclei in the medulla", isCorrect: true, rationale: "DCML fibers ascend ipsilaterally and synapse in the medulla." },
-                        { text: "Spinal cord dorsal horn immediately upon entry", isCorrect: false, rationale: "Anterolateral system fibers synapse immediately in the cord." },
-                        { text: "Ventral posterior thalamic nucleus", isCorrect: false, rationale: "Thalamus is the second synapse location." },
-                        { text: "Primary somatosensory postcentral gyrus", isCorrect: false, rationale: "Cortex is the final pathway destination." }
-                    ],
-                    hint: "They ascend in spinal dorsal columns before their first synapse in the brainstem."
-                },
-                {
-                    cat: "SOMATOSENSORY",
-                    q: "Why is the primary somatosensory homunculus distorted in scale?",
-                    options: [
-                        { text: "Cortical area reflects the density of sensory receptors and tactile discrimination needed", isCorrect: true, rationale: "Hands and face have dense receptors, taking up large cortical space." },
-                        { text: "Physical size of body parts determines cortical proportions", isCorrect: false, rationale: "Representation depends on sensitivity, not physical size." },
-                        { text: "Motor nerve thickness determines somatosensory area width", isCorrect: false, rationale: "Motor nerve width does not dictate sensory cortex scaling." },
-                        { text: "Damage during development compresses lower-limb cortex", isCorrect: false, rationale: "Homunculus scaling is standard biological organization." }
-                    ],
-                    hint: "Hands and lips get massive representation due to high sensitivity."
-                },
-                {
-                    cat: "CHEMICAL SENSES",
-                    q: "What makes the olfactory primary projection pathway unique compared to vision or hearing?",
-                    options: [
-                        { text: "It projects to primary cortex without passing through the thalamus first", isCorrect: true, rationale: "Olfaction bypasses the thalamus on its route to piriform cortex." },
-                        { text: "It projects exclusively to contralateral primary cortex", isCorrect: false, rationale: "Olfactory projections are primarily ipsilateral." },
-                        { text: "It relies on electrical synapses rather than neurotransmitters", isCorrect: false, rationale: "Olfactory synapses use standard chemical neurotransmission." },
-                        { text: "It lacks primary cortex and terminates only in brainstem", isCorrect: false, rationale: "Olfaction has primary piriform cortex." }
-                    ],
-                    hint: "It bypasses the brain's main sensory relay hub."
-                },
-                {
-                    cat: "CHEMICAL SENSES",
-                    q: "In the gustatory system, what functional difference exists between receptor cells and presynaptic cells?",
-                    options: [
-                        { text: "Receptor cells are narrowly tuned; presynaptic cells are broadly tuned", isCorrect: true, rationale: "Receptor cells respond to specific tastes; presynaptic cells integrate signals broadly." },
-                        { text: "Presynaptic cells reside in nasal mucosa; receptor cells reside on tongue", isCorrect: false, rationale: "Both cells reside inside taste buds." },
-                        { text: "Receptor cells use electrical gap junctions exclusively", isCorrect: false, rationale: "Gap junctions mediate communication among taste cells." },
-                        { text: "Presynaptic cells transmit pain rather than taste signals", isCorrect: false, rationale: "Both cell types are gustatory." }
-                    ],
-                    hint: "Narrow vs broad tuning to taste qualities."
-                },
-                {
-                    cat: "ATTENTION",
-                    q: "What type of attentional mechanism is driven by top-down cognitive control?",
-                    options: [
-                        { text: "Endogenous attention", isCorrect: true, rationale: "Endogenous attention is top-down and internal." },
-                        { text: "Exogenous attention", isCorrect: false, rationale: "Exogenous attention is bottom-up and external stimulus-driven." },
-                        { text: "Tonotopic attention", isCorrect: false, rationale: "Tonotopic refers to auditory cortex frequency mapping." },
-                        { text: "Somatotopically mediated focus", isCorrect: false, rationale: "Somatotopic refers to body surface mapping." }
-                    ],
-                    hint: "Endo = internal origin."
-                },
-                {
-                    cat: "ORGANIZATION",
-                    q: "What principle describes sensory systems having multiple parallel pathways analyzing signals simultaneously?",
-                    options: [
-                        { text: "Parallel processing", isCorrect: true, rationale: "Parallel processing allows simultaneous analysis via distinct pathways." },
-                        { text: "Functional homogeneity", isCorrect: false, rationale: "Modern models show functional segregation, not homogeneity." },
-                        { text: "Serial hierarchical flow", isCorrect: false, rationale: "Serial flow was the outdated single-pathway model." },
-                        { text: "Monolithic convergence", isCorrect: false, rationale: "Monolithic convergence is not a sensory principle." }
-                    ],
-                    hint: "Running multiple processing tracks at the same time."
-                },
-                {
-                    cat: "AUDITORY",
-                    q: "Which cortical stream specializes in identifying the identity of sounds ('what')?",
-                    options: [
-                        { text: "Anterior auditory pathway", isCorrect: true, rationale: "Anterior stream identifies 'what'; posterior stream locates 'where'." },
-                        { text: "Posterior auditory pathway", isCorrect: false, rationale: "Posterior stream processes sound location." },
-                        { text: "Dorsal spinothalamic stream", isCorrect: false, rationale: "Spinothalamic is a somatosensory pathway." },
-                        { text: "Lateral lemniscus projection", isCorrect: false, rationale: "Lateral lemniscus is a subcortical auditory tract." }
-                    ],
-                    hint: "Points forward toward prefrontal areas."
-                },
-                {
-                    cat: "SOMATOSENSORY",
-                    q: "What property distinguishes bimodal neurons in posterior parietal association cortex?",
-                    options: [
-                        { text: "They respond to both visual and tactile stimuli with spatially aligned fields", isCorrect: true, rationale: "Visual and tactile fields move together as body parts move." },
-                        { text: "They fire only when pain stimuli exceed dangerous thresholds", isCorrect: false, rationale: "Nociceptors handle pain thresholds." },
-                        { text: "They convert chemical odorants into electrical spikes", isCorrect: false, rationale: "Olfactory receptors convert odorants." },
-                        { text: "They mediate descending opioid analgesia in the spinal cord", isCorrect: false, rationale: "Descending analgesia is handled by PAG and raphe nuclei." }
-                    ],
-                    hint: "Bi- modal = two sensory modalities working together."
-                }
-            ],
-
-            // SET 3: DIFFICULT (Complex Circuits & Pathology)
-            [
-                {
-                    cat: "PAIN",
-                    q: "Which descending circuit mechanism leads to the suppression of spinal pain signals?",
-                    options: [
-                        { text: "PAG opioids inhibit interneurons $\\rightarrow$ excites raphe nuclei $\\rightarrow$ blocks spinal dorsal horn", isCorrect: true, rationale: "Opioid action in periaqueductal gray activates descending serotonergic raphe pathways." },
-                        { text: "Spinothalamic tract inhibits ventral posterior nucleus directly", isCorrect: false, rationale: "Spinothalamic tract is an ascending pain pathway." },
-                        { text: "Solitary nucleus releases endorphins into olfactory mucosa", isCorrect: false, rationale: "Solitary nucleus is gustatory; mucosa is olfactory." },
-                        { text: "DCML pathway activates Pacinian corpuscles to block heat receptors", isCorrect: false, rationale: "Touch can gate pain, but this describes descending PAG circuits." }
-                    ],
-                    hint: "Periaqueductal Gray (PAG) to Raphe Nuclei to Dorsal Horn."
-                },
-                {
-                    cat: "SOMATOSENSORY",
-                    q: "What neuroanatomical damage typically underlies asomatognosia?",
-                    options: [
-                        { text: "Extensive damage to the right temporal and posterior parietal lobes", isCorrect: true, rationale: "Asomatognosia (left-side body neglect) usually follows right parietotemporal lesions." },
-                        { text: "Bilateral destruction of the primary auditory cortex in lateral fissure", isCorrect: false, rationale: "Auditory cortex damage affects sound localization." },
-                        { text: "Complete transection of the anterior spinal commissure", isCorrect: false, rationale: "Spinal transection causes sensory loss below level of injury." },
-                        { text: "Unilateral lesion of the medial geniculate nucleus", isCorrect: false, rationale: "Medial geniculate nucleus is auditory relay." }
-                    ],
-                    hint: "Unilateral left-body loss usually stems from right parietal/temporal damage."
-                },
-                {
-                    cat: "ATTENTION",
-                    q: "What lesion pattern typically produces simultanagnosia?",
-                    options: [
-                        { text: "Bilateral damage to the posterior parietal cortex", isCorrect: true, rationale: "Bilateral posterior parietal lesions prevent attending to multiple visual objects." },
-                        { text: "Unilateral lesion of the primary gustatory insula", isCorrect: false, rationale: "Insula lesions affect taste perception." },
-                        { text: "Surgical excision of the anterior cingulate cortex", isCorrect: false, rationale: "Anterior cingulate lesions affect pain/emotion." },
-                        { text: "Degeneration of hair cells in the basilar apex", isCorrect: false, rationale: "Apex hair cell loss affects low-frequency hearing." }
-                    ],
-                    hint: "Requires damage on BOTH sides of the posterior parietal lobe."
-                },
-                {
-                    cat: "PAIN",
-                    q: "What defines neuropathic pain?",
-                    options: [
-                        { text: "Severe chronic pain in the absence of an active recognizable pain stimulus", isCorrect: true, rationale: "Neuropathic pain persists long after injury healing due to CNS dysfunction." },
-                        { text: "Acute pain triggered exclusively by high thermal exposure", isCorrect: false, rationale: "Thermal pain is normal nociceptive pain." },
-                        { text: "Loss of pain sensation following spinal cord transection", isCorrect: false, rationale: "That is pain anesthesia." },
-                        { text: "Referred pain originating from internal visceral organs", isCorrect: false, rationale: "Referred pain is normal nociceptive cross-talk." }
-                    ],
-                    hint: "Pain that persists with no clear ongoing physical injury."
-                },
-                {
-                    cat: "ATTENTION",
-                    q: "How does the 'cocktail-party phenomenon' demonstrate implicit sensory processing?",
-                    options: [
-                        { text: "Unattended background signals are monitored unconsciously for meaningful cues like your name", isCorrect: true, rationale: "The brain unconsciously evaluates unattended channels while focusing on one conversation." },
-                        { text: "Auditory hair cells cease firing when background noise exceeds 80 dB", isCorrect: false, rationale: "Hair cells continue firing across sound levels." },
-                        { text: "Selective attention prevents all background auditory info from reaching cortex", isCorrect: false, rationale: "Information reaches early stages to allow background monitoring." },
-                        { text: "Exogenous focus completely shuts down endogenous processing streams", isCorrect: false, rationale: "Both mechanisms interact continuously." }
-                    ],
-                    hint: "Hearing your name spoken across a noisy room."
-                },
-                {
-                    cat: "AUDITORY",
-                    q: "What is the missing fundamental phenomenon in pitch perception?",
-                    options: [
-                        { text: "Perceived pitch matches the fundamental frequency even if that frequency is removed", isCorrect: true, rationale: "Pitch corresponds to fundamental multiples (e.g., 200, 300, 400 Hz -> perceived 100 Hz)." },
-                        { text: "Damage to ossicles selectively removes high-frequency pitch perception", isCorrect: false, rationale: "Ossicle damage affects overall sound transmission (conductive loss)." },
-                        { text: "Cochlear implants fail to transduce fundamental sine waves", isCorrect: false, rationale: "Implants bypass hair cells directly." },
-                        { text: "Hair cells at the basilar base respond only to absent sound waves", isCorrect: false, rationale: "Base hair cells respond to high frequencies." }
-                    ],
-                    hint: "The pitch remains the same even when the lowest tone is missing."
-                },
-                {
-                    cat: "SOMATOSENSORY",
-                    q: "Why is pure astereognosia relatively rare in clinical cases?",
-                    options: [
-                        { text: "Parallel tactile pathways usually preserve basic sensory information", isCorrect: true, rationale: "Touch has redundant parallel channels; pure agnosia requires precise cortical damage." },
-                        { text: "Cutaneous receptors regenerate completely every few days", isCorrect: false, rationale: "Cutaneous receptors do not rapidly regenerate like taste/smell cells." },
-                        { text: "Touch signals bypass the thalamus directly to association areas", isCorrect: false, rationale: "Touch pathways relay through the thalamus." },
-                        { text: "The postcentral gyrus receives bilateral spinal inputs exclusively", isCorrect: false, rationale: "SI inputs are primarily contralateral." }
-                    ],
-                    hint: "Multiple parallel sensory pathways protect against total isolated loss."
-                },
-                {
-                    cat: "CHEMICAL SENSES",
-                    q: "What organizational pattern characterizes olfactory glomeruli?",
-                    options: [
-                        { text: "Each glomerulus receives input from receptors containing the same receptor protein", isCorrect: true, rationale: "Glomeruli form a chemotopic map based on receptor protein types." },
-                        { text: "Glomeruli are arranged tonotopically by odor vibration frequency", isCorrect: false, rationale: "Tonotopic mapping belongs to the auditory system." },
-                        { text: "Each glomerulus contains bimodal neurons linked to visual fields", isCorrect: false, rationale: "Bimodal parietal neurons handle visual/tactile integration." },
-                        { text: "Glomeruli reside in the solitary nucleus of the medulla", isCorrect: false, rationale: "Glomeruli reside in the olfactory bulb." }
-                    ],
-                    hint: "Clustered by specific olfactory receptor protein type."
-                },
-                {
-                    cat: "PAIN",
-                    q: "Which paradoxical feature characterizes the cortical representation of pain?",
-                    options: [
-                        { text: "Pain activates widespread areas, but no single cortical region is necessary for feeling pain", isCorrect: true, rationale: "Hemispherized or cortical lesion patients still experience pain." },
-                        { text: "Pain is processed exclusively in the primary visual striate cortex", isCorrect: false, rationale: "Visual cortex does not process pain." },
-                        { text: "Cortical pain circuits require continuous conscious exogenous attention", isCorrect: false, rationale: "Pain alerts the brain even during sleep or distraction." },
-                        { text: "Pain perception occurs only after motor output execution", isCorrect: false, rationale: "Sensory pain perception precedes voluntary motor action." }
-                    ],
-                    hint: "Pain is everywhere in the brain, yet removing any one region won't stop it."
-                },
-                {
-                    cat: "ORGANIZATION",
-                    q: "According to modern sensory models, how does destruction of an association area differ from primary cortex destruction?",
-                    options: [
-                        { text: "Association damage produces complex/specific deficits; primary damage causes complete sensory loss in that modality", isCorrect: true, rationale: "Higher levels perform complex integration; lower levels carry fundamental input." },
-                        { text: "Association damage causes immediate receptor cell death; primary damage leaves receptors intact", isCorrect: false, rationale: "Cortical lesions do not retrogradely kill skin/ear receptors." },
-                        { text: "Association damage affects speed of processing; primary damage affects emotional tone", isCorrect: false, rationale: "Primary areas process basic sensory features." },
-                        { text: "There is no functional difference between levels in modern models", isCorrect: false, rationale: "Modern models retain hierarchical complexity differentiation." }
-                    ],
-                    hint: "Base level loss = total blindness/deafness; high level loss = specific agnosias."
-                }
-            ]
-        ];
-
-        let currentSetIndex = 0;
-        let currentQuestionIndex = 0;
-        let score = 0;
-        let currentSetData = [];
-
-        const levelBadges = [
-            { name: "EASY", class: "bg-cyan-950 text-cyan-400 border-cyan-800" },
-            { name: "MODERATE", class: "bg-amber-950 text-amber-400 border-amber-800" },
-            { name: "DIFFICULT", class: "bg-rose-950 text-rose-400 border-rose-800" }
-        ];
-
-        function startSet(setIndex) {
-            currentSetIndex = setIndex;
-            currentQuestionIndex = 0;
-            score = 0;
-            currentSetData = quizData[setIndex];
-
-            document.getElementById('screen-menu').classList.add('hidden');
-            document.getElementById('screen-complete').classList.add('hidden');
-            document.getElementById('screen-quiz').classList.remove('hidden');
-            document.getElementById('score-display').classList.remove('hidden');
-
-            const badgeElem = document.getElementById('current-level-badge');
-            badgeElem.textContent = levelBadges[setIndex].name;
-            badgeElem.className = `font-bold px-2.5 py-0.5 rounded-full text-xs border ${levelBadges[setIndex].class}`;
-
-            loadQuestion();
+    // --- QUIZ LOGIC WITH RANDOMIZED ANSWER POSITIONS ---
+    const quizTiers = {
+      1: [
+        {
+          question: "Which mechanism removes neurotransmitters from the synaptic cleft back into the presynaptic terminal?",
+          options: ["Enzymatic degradation", "Reuptake", "Diffusion", "Exocytosis"],
+          correctAnswer: 1, // B
+          explanation: "Reuptake involves specialized transporter proteins pumping neurotransmitters back into the presynaptic neuron."
+        },
+        {
+          question: "What effect does an Excitatory Postsynaptic Potential (EPSP) have on a neuron's membrane potential?",
+          options: ["Hyperpolarization", "No effect", "Depolarization", "Repolarization"],
+          correctAnswer: 2, // C
+          explanation: "EPSPs depolarize the membrane, bringing the potential closer to the action potential firing threshold."
         }
-
-        function loadQuestion() {
-            const qData = currentSetData[currentQuestionIndex];
-            document.getElementById('q-current').textContent = currentQuestionIndex + 1;
-            document.getElementById('q-category').textContent = qData.cat;
-            document.getElementById('question-text').innerHTML = qData.q;
-            document.getElementById('current-score').textContent = score;
-
-            const progress = (currentQuestionIndex / currentSetData.length) * 100;
-            document.getElementById('progress-bar').style.width = progress + '%';
-
-            const hintElem = document.getElementById('hint-text');
-            hintElem.textContent = qData.hint;
-            hintElem.classList.add('hidden');
-            document.getElementById('feedback-box').classList.add('hidden');
-
-            const container = document.getElementById('options-container');
-            container.innerHTML = '';
-
-            qData.options.forEach((opt, idx) => {
-                const btn = document.createElement('button');
-                btn.className = "w-full text-left p-4 rounded-xl bg-slate-800/60 hover:bg-slate-800 border border-slate-700 hover:border-cyan-500/50 text-slate-200 text-sm font-medium transition-all flex items-center justify-between group";
-                btn.innerHTML = `<span>${opt.text}</span><span class="w-6 h-6 rounded-lg bg-slate-700 text-slate-400 group-hover:bg-cyan-600 group-hover:text-white flex items-center justify-center text-xs font-cyber transition-colors">${String.fromCharCode(65 + idx)}</span>`;
-                btn.onclick = () => selectOption(opt.isCorrect, opt.rationale, btn);
-                container.appendChild(btn);
-            });
+      ],
+      2: [
+        {
+          question: "Selective Serotonin Reuptake Inhibitors (SSRIs) increase serotonin concentration by doing which of the following?",
+          options: [
+            "Stimulating postsynaptic receptors directly",
+            "Enhancing presynaptic neurotransmitter production",
+            "Promoting rapid enzymatic breakdown",
+            "Blocking the presynaptic serotonin transporter (SERT)"
+          ],
+          correctAnswer: 3, // D
+          explanation: "SSRIs block SERT, preventing serotonin from being reabsorbed and leaving more available in the synaptic cleft."
+        },
+        {
+          question: "When multiple subthreshold signals arrive rapidly from a single presynaptic axon to trigger an action potential, this is called:",
+          options: ["Temporal Summation", "Spatial Summation", "Retrograde Inhibition", "Synaptic Pruning"],
+          correctAnswer: 0, // A
+          explanation: "Temporal summation occurs when consecutive potentials at a single synapse accumulate over a short timeframe."
         }
-
-        function toggleHint() {
-            document.getElementById('hint-text').classList.toggle('hidden');
+      ],
+      3: [
+        {
+          question: "During Long-Term Potentiation (LTP), which ion influx through NMDA receptors triggers intracellular signaling cascades for synaptic strengthening?",
+          options: ["Sodium (Na+)", "Calcium (Ca2+)", "Potassium (K+)", "Chloride (Cl-)"],
+          correctAnswer: 1, // B
+          explanation: "Calcium (Ca2+) entry via NMDA receptors activates protein kinases essential for structural synaptic enhancements."
         }
+      ]
+    };
 
-        function selectOption(isCorrect, rationale, selectedBtn) {
-            const buttons = document.getElementById('options-container').getElementsByTagName('button');
-            for (let btn of buttons) {
-                btn.disabled = true;
-                btn.classList.add('opacity-75', 'cursor-not-allowed');
-            }
+    let currentTier = 1;
+    let currentQuestionIdx = 0;
 
-            if (isCorrect) {
-                score++;
-                document.getElementById('current-score').textContent = score;
-                selectedBtn.classList.remove('bg-slate-800/60', 'border-slate-700');
-                selectedBtn.classList.add('bg-emerald-950/60', 'border-emerald-500', 'text-emerald-200');
+    function selectTier(tier) {
+      currentTier = tier;
+      currentQuestionIdx = 0;
+      document.querySelectorAll('.tier-btn').forEach((btn, idx) => {
+        btn.classList.toggle('active', idx + 1 === tier);
+      });
+      renderQuestion();
+    }
 
-                document.getElementById('feedback-icon').textContent = '✅';
-                document.getElementById('feedback-title').textContent = 'CORRECT ANSWER!';
-                document.getElementById('feedback-title').className = 'font-cyber font-bold text-sm text-emerald-400';
-            } else {
-                selectedBtn.classList.remove('bg-slate-800/60', 'border-slate-700');
-                selectedBtn.classList.add('bg-rose-950/60', 'border-rose-500', 'text-rose-200');
+    function renderQuestion() {
+      const q = quizTiers[currentTier][currentQuestionIdx];
+      document.getElementById('quiz-question').innerText = q.question;
+      
+      const container = document.getElementById('options-container');
+      container.innerHTML = '';
+      
+      document.getElementById('explanation').style.display = 'none';
+      document.getElementById('next-quiz-btn').style.display = 'none';
 
-                for (let btn of buttons) {
-                    currentSetData[currentQuestionIndex].options.forEach(opt => {
-                        if (opt.isCorrect && btn.textContent.includes(opt.text)) {
-                            btn.classList.remove('bg-slate-800/60', 'border-slate-700');
-                            btn.classList.add('bg-emerald-950/40', 'border-emerald-500/60', 'text-emerald-300');
-                        }
-                    });
-                }
+      const optionLabels = ['A', 'B', 'C', 'D'];
 
-                document.getElementById('feedback-icon').textContent = '❌';
-                document.getElementById('feedback-title').textContent = 'INCORRECT!';
-                document.getElementById('feedback-title').className = 'font-cyber font-bold text-sm text-rose-400';
-            }
+      q.options.forEach((optText, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.innerText = `${optionLabels[index]}. ${optText}`;
+        btn.onclick = () => checkAnswer(index, q.correctAnswer, q.explanation);
+        container.appendChild(btn);
+      });
+    }
 
-            document.getElementById('feedback-text').innerHTML = rationale;
-            document.getElementById('feedback-box').classList.remove('hidden');
+    function checkAnswer(selectedIndex, correctIndex, explanationText) {
+      const buttons = document.querySelectorAll('.option-btn');
+      buttons.forEach((btn, idx) => {
+        btn.disabled = true;
+        if (idx === correctIndex) {
+          btn.classList.add('correct');
+        } else if (idx === selectedIndex) {
+          btn.classList.add('incorrect');
         }
+      });
 
-        function nextQuestion() {
-            currentQuestionIndex++;
-            if (currentQuestionIndex < currentSetData.length) {
-                loadQuestion();
-            } else {
-                showCompletion();
-            }
-        }
+      const expEl = document.getElementById('explanation');
+      expEl.innerText = explanationText;
+      expEl.style.display = 'block';
 
-        function showCompletion() {
-            document.getElementById('screen-quiz').classList.add('hidden');
-            document.getElementById('score-display').classList.add('hidden');
-            document.getElementById('screen-complete').classList.remove('hidden');
+      if (currentQuestionIdx < quizTiers[currentTier].length - 1) {
+        document.getElementById('next-quiz-btn').style.display = 'inline-block';
+      }
+    }
 
-            document.getElementById('final-score').textContent = `${score} / 10`;
-            document.getElementById('result-subtitle').textContent = `You finished Set ${currentSetIndex + 1} (${levelBadges[currentSetIndex].name}).`;
-        }
+    function nextQuestion() {
+      currentQuestionIdx++;
+      renderQuestion();
+    }
 
-        function resetToMenu() {
-            document.getElementById('screen-complete').classList.add('hidden');
-            document.getElementById('score-display').classList.add('hidden');
-            document.getElementById('screen-menu').classList.remove('hidden');
-        }
+    function switchTab(tab) {
+      document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('nav button').forEach(el => el.classList.remove('active'));
 
-        function restartSet() {
-            startSet(currentSetIndex);
-        }
-    </script>
+      if (tab === 'slides') {
+        document.getElementById('slides-view').classList.add('active');
+        document.getElementById('tab-slides').classList.add('active');
+      } else {
+        document.getElementById('quiz-view').classList.add('active');
+        document.getElementById('tab-quiz').classList.add('active');
+        renderQuestion();
+      }
+    }
+
+    // Initialize View
+    renderSlide();
+  </script>
 </body>
 </html>
-```eof
-
-***
-
-### Features of the New Quiz Game:
-* **3 Scaled Difficulty Tiers:**
-  * **Set 1 (Easy):** 10 foundational questions covering basic structures, terms, and primary sensory definitions.
-  * **Set 2 (Moderate):** 10 questions focused on neural pathways (DCML, anterolateral, auditory streams), cortical organization, and subcortical processing.
-  * **Set 3 (Difficult):** 10 high-level questions covering complex descending pain circuits (PAG/raphe), clinical agnosias (asomatognosia, astereognosia, simultanagnosia), neuropathic pain, and subtle attentional mechanisms.
-* **Interactive Features:** Real-time scoring, hints for every question, step-by-step rationale feedback for correct/incorrect choices, and progress tracking.
